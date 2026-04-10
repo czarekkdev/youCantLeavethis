@@ -118,7 +118,7 @@
     <None Include="Resources\National_Flag_of_Poland.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Hymn.mp3" />
+    <None Include="Resources\Hymn.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
