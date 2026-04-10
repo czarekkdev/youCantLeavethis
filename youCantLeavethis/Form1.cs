@@ -15,6 +15,7 @@ namespace youCantLeavethis
 {
     public partial class youCantLeavethis : Form
     {
+        bool ending = false;
         public youCantLeavethis()
         {
             InitializeComponent();
@@ -27,6 +28,7 @@ namespace youCantLeavethis
 
         private void on_close(object sender, FormClosingEventArgs e)
         {
+            if (ending) return;
             e.Cancel = true;
             MessageBox.Show("Nah that aint gonna work lol", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
@@ -37,6 +39,8 @@ namespace youCantLeavethis
 
             if (question == DialogResult.Yes) {
                 MessageBox.Show("alright, remember to tell your parents so they can be disappointed", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ending = true;
+                this.Close();
                 Program.fix();
             } 
 
