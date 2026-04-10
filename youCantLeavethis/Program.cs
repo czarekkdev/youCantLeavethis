@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace youCantLeavethis
         [STAThread]
         static void Main()
         {
+            SoundPlayer player = new SoundPlayer();
             Process.EnterDebugMode();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
