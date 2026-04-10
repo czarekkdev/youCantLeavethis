@@ -28,21 +28,21 @@ namespace youCantLeavethis
         private void on_close(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            MessageBox.Show("Nah that aint gonna work lol");
+            MessageBox.Show("Nah that aint gonna work lol", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DialogResult question = MessageBox.Show("Oh so you are gay?", "", MessageBoxButtons.YesNo);
+            DialogResult question = MessageBox.Show("Oh so you are gay?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (question == DialogResult.Yes) {
-                MessageBox.Show("alright, remember to tell your parents so they can be disappointed");
+                MessageBox.Show("alright, remember to tell your parents so they can be disappointed", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Program.fix();
             } 
 
             else
             {
-                MessageBox.Show("Then why did you lie by clicking the button?");
+                MessageBox.Show("Then why did you lie by clicking the button?", "Question", MessageBoxButtons.OK, MessageBoxIcon.Question);
             }
         }
 
