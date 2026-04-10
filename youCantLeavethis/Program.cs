@@ -214,6 +214,7 @@ namespace youCantLeavethis
             player.Dispose();
             player = new SoundPlayer(Properties.Resources.Ha__Gay___QuickSounds_com);
             player.PlaySync();
+            player.Dispose();
             Process.GetCurrentProcess().Kill();
         }
     }
