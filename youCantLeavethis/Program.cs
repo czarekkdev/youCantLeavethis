@@ -1,15 +1,8 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Media;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace youCantLeavethis
@@ -67,8 +60,6 @@ namespace youCantLeavethis
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool IsProcessCritical(IntPtr hProcess, out bool IsCritical);
-
-        private static Thread current_thread = Thread.CurrentThread;
 
         public static void make_process_critical()
         {
