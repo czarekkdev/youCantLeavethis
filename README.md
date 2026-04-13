@@ -85,4 +85,4 @@ This is a **joke/prank project** created for educational and entertainment purpo
 
 ---
 
-*czarekczaro — Made in Poland 🇵🇱*
+*czarekkdev — Made in Poland 🇵🇱*
